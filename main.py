@@ -1,15 +1,34 @@
-from classes import joueur
-from classes import display
-from classes import gestion
+#coding UTF-8
+
+import classes.joueur
+import classes.display
+import classes.gestion
 from classes.locals import game_properties
 
-Doc.open("classes/locals/contenu.txt")
+
+
+
+
+
+
+class localvars:
+    def __init__(self):
+        file = open("classes/locals/contenu.txt")
+        self.lines = file.readlines()
+        file.close()
+        pass
+localvars = localvars()
+
+
 
 class menu:
     def __init__(self):
         print("à ,l'intérieur du menu")
         pass
 
+
+    for elt in localvars.lines:
+        print(elt[:-1])
 
 
 
@@ -21,7 +40,9 @@ class main:
     def __init__(self):
         print("à ,l'intérieur du main")
         pass
-    joueur.define_role()
+
+    print(classes.joueur.define_role())
+
 
 
 
@@ -35,7 +56,7 @@ class main:
 
 
 
-if __name__ == '__main__':
+if __name__ is '__main__':
     print('Lancement menu')
     menu()
     print('Lancement partie')
