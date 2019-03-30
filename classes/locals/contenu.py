@@ -1,5 +1,7 @@
 lines = [
-
+"   ",
+"   ",
+"   ",
 "   Bienvenue dans le loup-garou !",
 "   Voici les règles :",
 "   ",
