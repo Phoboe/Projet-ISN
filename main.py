@@ -41,7 +41,7 @@ class main:
         print("à ,l'intérieur du main")
         pass
 
-    print("\nVotre rôle est : {1}\n".format(classes.joueur.define_role()))
+    print("\nVotre rôle est : {0}\n".format(classes.joueur.define_role()))
 
 
 

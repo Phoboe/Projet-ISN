@@ -2,4 +2,6 @@
 
 python main.py
 
-TIMEOUT /T 10
+TIMEOUT /T 1
+
+pause
