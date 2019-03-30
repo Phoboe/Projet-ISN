@@ -1,5 +1,3 @@
-#coding -*- coding: utf-8 -*-
-
 import classes.joueur
 import classes.display
 import classes.gestion
@@ -22,9 +20,12 @@ class menu:
         print("à ,l'intérieur du menu")
         pass
 
-
+    i = 1
     for elt in contenu.lines:
         print(elt)
+        i += 1
+        if i is 20:
+            os.system("pause")
 
 
 
