@@ -43,7 +43,18 @@ class main:
 
     print("\nVotre rôle est : {0}\n".format(classes.joueur.define_role()))
 
-
+    valid = False
+    while valid is False:
+        x = input('Voulez- vous commencer une partie ?\n')
+        try:
+            suite = suite.upper()
+        except TypeError:
+            print("Vérifiez que vous avez bien rentré une lettre.\n")
+        else:
+            if suite.upper() != "O" and suite.upper() != "N":
+                print("vous devez rentrer un 'O' ou un 'N', pour Oui ou Non.")
+            valid = True
+        pass
 
 
 
