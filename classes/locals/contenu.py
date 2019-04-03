@@ -40,7 +40,7 @@ Rules = [
 """  """,
 ]
 
-telling = [
+Telling = [
 "La nuit tombe.",
 "Le jour se lève.",
 
