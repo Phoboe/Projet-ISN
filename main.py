@@ -25,9 +25,7 @@ class menu:
         print(elt) # et on les affiche
         i += 1
         if i is 15:
-            print('\n----------------------------------------')
             os.system("pause")
-            print('----------------------------------------\n')
             i = 10
 
 
