@@ -21,7 +21,7 @@ class menu:
         pass
 
     i = 1
-    for elt in contenu.lines[2:20]: # on parcours les lignes du menu (règles)
+    for elt in contenu.Rules[1:15]: # on parcours les lignes du menu (règles)
         print(elt) # et on les affiche
         i += 1
         if i is 15:
@@ -38,7 +38,7 @@ class menu:
 
 class main:
     def __init__(self):
-        print("à ,l'intérieur du main")
+        print("à l'intérieur du main")
         pass
 
     print("\nVotre rôle est : {0}\n".format(classes.joueur.define_role()))
