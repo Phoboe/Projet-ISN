@@ -73,7 +73,7 @@ Telling = [
 "Chasseur, tu es mort, quel joueur veux-tu tuer ?",
 "Petite-fille, voila ce qu'il se passe.",
 "Capitaine, n'oublies pas que tes votes valent 2 voix.",
-"Capitaine, quel seccesseur désignes-tu ?",
+"Capitaine, quel successeur désignes-tu ?",
 "",
 "",
 "",
