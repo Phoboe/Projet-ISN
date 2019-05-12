@@ -2,8 +2,7 @@ import pygame
 from pygame.locals import *
 from random import randrange
 from math import *
-#from classes import Roles
-import time
+from classes import Roles
 
 pygame.init()
 
@@ -480,7 +479,7 @@ def menu():
     stop = False
     while stop is not True:
         i -= pi/40
-        if i <= 0:
+        if i < 0:
             stop = True
         else:
             fond_transformed.set_alpha(sin(i)*150)
@@ -496,24 +495,106 @@ def menu():
                    stop = True
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 stop = True
-                display.stopALL = True
                 pass
         pass
-    fond_transformed.set_alpha(150)
+    fond_transformed.set_alpha(0)
     pass
+
+
+
 
 
 
 
 def play():
     win = display.win
+
     locate_fond = 'TEXTURES/fond_menu2.jpg'
+    locate_animals = [
+    'TEXTURES/ICONS/cow.png',
+    'TEXTURES/ICONS/deer.png',
+    'TEXTURES/ICONS/dog.png',
+    'TEXTURES/ICONS/elephant.png',
+    'TEXTURES/ICONS/fox.png',
+    'TEXTURES/ICONS/husky.png',
+    'TEXTURES/ICONS/koala.png',
+    'TEXTURES/ICONS/monkey.png',
+    'TEXTURES/ICONS/panda.png',
+    'TEXTURES/ICONS/pig.png',
+    'TEXTURES/ICONS/rabbit.png',
+    'TEXTURES/ICONS/rhino.png',
+    'TEXTURES/ICONS/snake.png',
+    'TEXTURES/ICONS/tiger.png',
+    'TEXTURES/ICONS/bird.png',
+    'TEXTURES/ICONS/giraffe.png',
+    'TEXTURES/ICONS/goat.png',
+    'TEXTURES/ICONS/lion.png'
+    ]
+
+    initialTick = pygame.time.get_ticks()
+    print('0 - ticks : 0') # DEBUG: test de latence
+    roles = Roles.define_role() # tous les roles distribués sur 18 cartes
+    print('1 - ticks : ' + str(pygame.time.get_ticks()-initialTick)) # DEBUG: test de latence
+    alive = [] # Si ils sont vivants
+    simpleRoles = [] # liste ne contenant que loup-garou ou villageois (la sorcière étant un villageois)
+    for elt in roles:
+        alive.append(True) # tout le monde est vivant au début
+        if elt is 'loup garou':
+            simpleRoles.append('loup garou')
+        else:
+            simpleRoles.append('villageois')
+            pass
+        pass
 
 
-    fond = pygame.image.load(locate_fond)
-    fond_transformed = pygame.transform.scale(fond, (display.width, display.height))
+    class Animal():
+        ''' Classe sur le bouton de jeu. '''
+        def __init__(self, locate):
+            self.factor = 1 # facteur d'agrandissement de l'image
+            self.sub = 0 # sous facteur, image de sinus pour adoucir l'agrandissement de l'image.
+            self.thisNoMod = pygame.image.load(locate) # image brute
+            self.w = 110 # largeur de l'image
+            self.h = 110 # hauteur
+            self.this = pygame.transform.smoothscale(self.thisNoMod, (self.w*self.factor, self.h*self.factor)) # image agrandie
+            self.initx = 0 # position initiale (centre)
+            self.inity = 0 #          ''
+            self.x = self.initx - (self.w*self.factor/2) # position x de l'image
+            self.y = self.inity - (self.h*self.factor/2) # position y
+            pass
+        pass
 
 
+    print('2 - ticks : ' + str(pygame.time.get_ticks()-initialTick)) # DEBUG: test de latence
+    animals = [] # variable contenant les instances de la classe Animal()
+    for i in range(0,18):
+        animals.append(Animal(locate_animals[i])) # On remplit la liste d'instance des animaux
+        pass
+    Roles.mix(animals, 160) # on mixe animals 160 fois
+    print('3 - ticks : ' + str(pygame.time.get_ticks()-initialTick)) # DEBUG: test de latence
+
+    animals[0].w = animals[0].w * 2
+    animals[0].h = animals[0].h * 2
+    animals[0].initx = 20 + (animals[0].w/2)               # On modifie les paramètres du premier animal (le joueur)
+    animals[0].inity = (display.height) - (animals[0].h/2) - 20
+    animals[0].x = animals[0].initx - (animals[0].w*animals[0].factor/2) # position x de l'image
+    animals[0].y = animals[0].inity - (animals[0].h*animals[0].factor/2) # position y
+    animals[0].this = pygame.transform.smoothscale(animals[0].thisNoMod, (int(animals[0].w*animals[0].factor), int(animals[0].h*animals[0].factor))) # image agrandie
+
+    j = 0
+    h = 0
+    for i in range(1,18): # on change la position des images
+        animals[i].x = ((6/2)*animals[i].w) + (j*animals[i].w)
+        animals[i].y = ((3/2)*animals[i].h) + (h*animals[i].h)
+        j += 1
+        if j >= 6:
+            j = 0
+            h += 1
+        pass
+
+    fond = pygame.image.load(locate_fond) # on importe le fond
+    fond_transformed = pygame.transform.scale(fond, (display.width, display.height)) # on agrandit le fond pour l'adapter à l'écran
+
+    print('4 - ticks : ' + str(pygame.time.get_ticks()-initialTick))
 
     pygame.display.set_caption("Les loup-Garous de Thiercelieux - Jeu")
 
@@ -530,6 +611,10 @@ def play():
 
 
         win.blit(fond_transformed, (0,0))
+        for i in range(1, 18):
+            win.blit(animals[i].this, (animals[i].x, animals[i].y)) # on affiche tous les animaux non joueurs
+            pass
+        win.blit(animals[0].this, (animals[0].x,animals[0].y))
         pygame.display.flip()
 
 
