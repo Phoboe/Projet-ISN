@@ -3,6 +3,7 @@ from pygame.locals import *
 from random import randrange
 from math import *
 from classes import Roles
+import sys
 
 pygame.init()
 
@@ -21,10 +22,13 @@ class DISPLAY():
 
         self.win = None
         self.mask = None
+        self.texts = ['','','','','','','','']
 
         self.BLACK = (0,0,0)
         self.WHITE = (255,255,255)
-
+        self.RED   = (255, 0, 0)
+        self.GREEN = (0, 255, 0)
+        self.BLUE  = (0, 0, 255)
 
         self.perfectlyScratchyFont = pygame.font.Font("Fonts/perfectly scratchy.ttf", 26)
         self.theHauntedMazeFont = pygame.font.Font("Fonts/The Haunted Maze - TTF.ttf", 26)
@@ -108,7 +112,6 @@ else:
 
 def menu():
     win = display.win
-
     def Rules():
         ''' Affiche les règles du jeu '''
         win = display.win
@@ -300,9 +303,8 @@ def menu():
         if i >= pi/2:
             stop = True
         else:
-            fond_transformed.set_alpha(sin(i)*150)
+            fond_transformed.set_alpha(sin(i)*255)
             pass
-
         win.fill(display.BLACK)
         win.blit(fond_transformed, (0,0))
         pygame.display.flip()
@@ -316,7 +318,7 @@ def menu():
                 display.stopALL = True
                 pass
         pass
-    fond_transformed.set_alpha(150)
+    fond_transformed.set_alpha(255)
 
 
 
@@ -374,9 +376,7 @@ def menu():
     pointList = []
     write = None
     stop = False
-
     while stop is not True:
-
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         # ---------Gestion de l'agrandissement des boutons--------- #
@@ -482,7 +482,7 @@ def menu():
         if i < 0:
             stop = True
         else:
-            fond_transformed.set_alpha(sin(i)*150)
+            fond_transformed.set_alpha(sin(i)*255)
             pass
 
         win.fill(display.BLACK)
@@ -502,12 +502,46 @@ def menu():
 
 
 
-
+#       ########  ##       #########  ##    ##
+#      ##    ##  ##       ##     ##  ##    ##
+#     ##   ###  ##       #########   #### ##
+#    #######   ##       ##     ##       ###
+#   ##        ##       ##     ##        ##
+#  ##        #######  ##     ##        ##
 
 
 
 def play():
     win = display.win
+    font = pygame.font.Font('Fonts/perfectly scratchy.ttf', 25)
+    fontBigger =pygame.font.Font('Fonts/perfectly scratchy.ttf', 34)
+    fontBIG = pygame.font.Font('Fonts/perfectly scratchy.ttf', 150)
+
+    class Wait():
+        ''' Définie pour la latence entre chaque action'''
+        def __init__(self):
+            self.game = 0
+            self.time = 0 # pour le début
+            self.cycle = 0 # pour le cycle de jeu
+            self.initTicks = pygame.time.get_ticks()
+            pass
+        pass
+    wait = Wait()
+
+    class Sounds():
+        """docstring for Sounds."""
+
+        def __init__(self):
+            self.newText = pygame.mixer.Sound("SOUNDS/Ceres.ogg")
+            pass
+    sounds = Sounds()
+
+    def text(message):
+        ''' écris le message dans texts et sera affiché ensuite. '''
+        sounds.newText.play()
+        display.texts.pop(7)
+        display.texts.insert(0, message)
+        pass
 
     locate_fond = 'TEXTURES/fond_menu2.jpg'
     locate_animals = [
@@ -531,21 +565,19 @@ def play():
     'TEXTURES/ICONS/lion.png'
     ]
 
-    initialTick = pygame.time.get_ticks()
-    print('0 - ticks : 0') # DEBUG: test de latence
+
+
     roles = Roles.define_role() # tous les roles distribués sur 18 cartes
-    print('1 - ticks : ' + str(pygame.time.get_ticks()-initialTick)) # DEBUG: test de latence
     alive = [] # Si ils sont vivants
     simpleRoles = [] # liste ne contenant que loup-garou ou villageois (la sorcière étant un villageois)
     for elt in roles:
         alive.append(True) # tout le monde est vivant au début
-        if elt is 'loup garou':
+        if elt == 'loup garou':
             simpleRoles.append('loup garou')
         else:
             simpleRoles.append('villageois')
             pass
         pass
-
 
     class Animal():
         ''' Classe sur le bouton de jeu. '''
@@ -564,13 +596,14 @@ def play():
         pass
 
 
-    print('2 - ticks : ' + str(pygame.time.get_ticks()-initialTick)) # DEBUG: test de latence
     animals = [] # variable contenant les instances de la classe Animal()
     for i in range(0,18):
         animals.append(Animal(locate_animals[i])) # On remplit la liste d'instance des animaux
         pass
     Roles.mix(animals, 160) # on mixe animals 160 fois
-    print('3 - ticks : ' + str(pygame.time.get_ticks()-initialTick)) # DEBUG: test de latence
+
+    text('Bienvenue !')
+    text('Vous arrivez dans une nouvelle Partie.')
 
     animals[0].w = animals[0].w * 2
     animals[0].h = animals[0].h * 2
@@ -582,9 +615,9 @@ def play():
 
     j = 0
     h = 0
-    for i in range(1,18): # on change la position des images
-        animals[i].x = ((6/2)*animals[i].w) + (j*animals[i].w)
-        animals[i].y = ((3/2)*animals[i].h) + (h*animals[i].h)
+    for i in range(1,18): # on change la position des images et on les met sur une grille
+        animals[i].x = ((6/2)*(animals[i].w)) + (j*(animals[i].w))
+        animals[i].y = ((3/2)*(animals[i].h)) + (h*(animals[i].h))
         j += 1
         if j >= 6:
             j = 0
@@ -594,32 +627,128 @@ def play():
     fond = pygame.image.load(locate_fond) # on importe le fond
     fond_transformed = pygame.transform.scale(fond, (display.width, display.height)) # on agrandit le fond pour l'adapter à l'écran
 
-    print('4 - ticks : ' + str(pygame.time.get_ticks()-initialTick))
+    # print('0 - ticks : ' + str(pygame.time.get_ticks()) ) # DEBUG: Test de latence.
 
     pygame.display.set_caption("Les loup-Garous de Thiercelieux - Jeu")
 
-
+    _0 = True # début
+    _1500 = True # variables servant à l'affichage
+    _6500 = True
+    _10000 = True
+    _15000 = True # Distribution des roles
+    _16000, _17000, _18000 = True, True, True # petits points
+    _20000 = True # Don des Roles
+    _24000 = True # Endormissement premier
 
     stop = False
     while stop is not True:
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        wait.time = pygame.time.get_ticks() - wait.initTicks # wait.time est le temps en ms depuis lequel le jeu est lancé.
+
+        if wait.time <= 11000 and _0:
+
+            if wait.time >= 1500 and _1500:
+                _1500 = not _1500
+                text('Prennez-place, nous allons commencer la partie.')
+            if wait.time >= 6500 and _6500:
+                _6500 = not _6500
+                text('Vos adversaires sont les animaux en-face de vous.')
+            if wait.time >= 10000 and _10000:
+                _10000 = not _10000
+                text('La partie commence !')
+        else:
+            _0 = False
+
+        if wait.time >= 15000 and _15000:
+            _15000 = not _15000
+            text('Distribution des roles.')
+        if wait.time >= 16000 and _16000:
+            _16000 = not _16000
+            text('.')
+        if wait.time >= 17000 and _17000:
+            _17000 = not _17000
+            text('.')
+        if wait.time >= 18000 and _18000:
+            _18000 = not _18000
+            text('.')
+        if wait.time >= 20000 and _20000:
+            _20000 = not _20000
+            if simpleRoles[0] == 'loup garou':
+                word = 'villageois'
+            else:
+                word = 'loup-garous'
+            text('Vous êtes : {0}. Vous êtes donc dans le camp des {1}, contre les {2}.'.format(roles[0], simpleRoles[0], word))
+        if wait.time >= 24000 and _24000:
+            _24000 = not _24000
+            text("Bonne chance ! Le village s'endort pour la première nuit.")
+        '''
+        if wait.time >= 0 and _0:
+            _0 = not _0
+            text('')'''
 
 
+        selected = 0
+        for i in range(1, 18):
+            if (mouse_x > animals[i].x              and mouse_y > animals[i].y          and
+                mouse_x < animals[i].x+animals[i].w and mouse_y < animals[i].y+animals[i].h):
+                selected = i
+            pass
 
 
-
-
-
-
+        ''' --------- Affichage --------- '''
         win.blit(fond_transformed, (0,0))
         for i in range(1, 18):
             win.blit(animals[i].this, (animals[i].x, animals[i].y)) # on affiche tous les animaux non joueurs
+            if not alive[i]:
+                pygame.draw.line(win, display.RED, (animals[i].x, animals[i].y+animals[i].h), (animals[i].x+animals[i].w, animals[i].y), 2)
+                pygame.draw.line(win, display.RED, (animals[i].x, animals[i].y), (animals[i].x+animals[i].w, animals[i].y+animals[i].h), 2)
+            pygame.draw.line(win, display.BLACK, (animals[i].x, animals[i].y), (animals[i].x+animals[i].w, animals[i].y), 2)
+            pygame.draw.line(win, display.BLACK, (animals[i].x+animals[i].w, animals[i].y), (animals[i].x+animals[i].w, animals[i].y+animals[i].h), 2)
+            pygame.draw.line(win, display.BLACK, (animals[i].x+animals[i].w, animals[i].y+animals[i].h), (animals[i].x, animals[i].y+animals[i].h), 2)
+            pygame.draw.line(win, display.BLACK, (animals[i].x, animals[i].y+animals[i].h), (animals[i].x, animals[i].y), 2)
             pass
+        if selected != 0:
+            modified = pygame.transform.smoothscale(animals[selected].thisNoMod, (int(animals[selected].w*2), int(animals[selected].h*2))) # image agrandie
+            win.blit(modified, (10, 10))
+            ###                    Texte des personnages
+            if alive[selected]:
+                sentance = ' - Statut : Vivant'
+                color = display.GREEN
+            else:
+                sentance = ' - Statut : Mort'
+                color = display.RED
+            text_ = fontBigger.render(sentance, True, color)
+            win.blit(text_, (animals[selected].w*2+10, 30))
+            ### Autre texte
+            sentance = ' - Role : Inconnu'
+            if simpleRoles[0] is simpleRoles[selected] and roles[selected] is not 'sorciere':
+                if wait.time >= 15000: sentance = ' - Role : {0}'.format(roles[selected])
+            elif not alive[selected]:
+                if wait.time >= 15000: sentence = ' - Role : {0}'.format(roles[selected])
+            text_ = fontBigger.render(sentance, True, display.BLACK)
+            win.blit(text_, (animals[selected].w*2+10, 65))
+            ###                    Fin Texte des personnages
+            pygame.draw.line(win, (168, 15, 15), (animals[selected].x, animals[selected].y), (animals[selected].x+animals[selected].w, animals[selected].y), 5)
+            pygame.draw.line(win, (168, 15, 15), (animals[selected].x+animals[selected].w, animals[selected].y), (animals[selected].x+animals[selected].w, animals[selected].y+animals[selected].h), 5)
+            pygame.draw.line(win, (168, 15, 15), (animals[selected].x+animals[selected].w, animals[selected].y+animals[selected].h), (animals[selected].x, animals[selected].y+animals[selected].h), 5)
+            pygame.draw.line(win, (168, 15, 15), (animals[selected].x, animals[selected].y+animals[selected].h), (animals[selected].x, animals[selected].y), 5)
+
         win.blit(animals[0].this, (animals[0].x,animals[0].y))
+
+        if wait.time <= 10000:
+            text_ = fontBIG.render(str(10-int(wait.time/1000)), False, display.WHITE) # Décompte de 10 secondes avant la partie
+            win.blit( text_, (display.width-125, display.height-125) )
+
+        for i in range(0, 7):
+            color = (int(i*255/10), int(i*255/10), int(i*255/15))
+            text_ = font.render(display.texts[i], True, color)
+            win.blit( text_, (330, (display.height-200) + (i*(150/6))) )
+            pass
         pygame.display.flip()
+        ''' --------- Fin affichage --------- '''
 
-
-
-        for event in pygame.event.get():
+        ''' --------- Gestion Evenements --------- '''
+        for event in pygame.event.get(): # Gestion des évenements
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 stop = True
                 pygame.display.set_caption("Les loup-Garous de Thiercelieux - Accueuil")
@@ -634,7 +763,7 @@ def play():
                         pass
                     pass
                 pass
-
+        ''' --------- Fin Gestion Evenements --------- '''
     pass
 
 
@@ -649,6 +778,5 @@ while display.stopALL is False:
     menu()
     play()
     pass
-
 
 ''' END '''
